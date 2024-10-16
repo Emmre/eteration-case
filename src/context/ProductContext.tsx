@@ -1,3 +1,4 @@
+import { fetchProductList } from "@/services/productService";
 import { Product, SortOption } from "@/types/productTypes";
 import React, {
   createContext,
@@ -73,12 +74,9 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        "https://5fc9346b2af77700165ae514.mockapi.io/products"
-      );
-      const data: Product[] = await response.json();
-      setProducts(data);
-      setFilteredProducts(data);
+      const response = await fetchProductList();
+      setProducts(response.data);
+      setFilteredProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {

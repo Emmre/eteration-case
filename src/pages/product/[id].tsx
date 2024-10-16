@@ -10,6 +10,7 @@ import {
   ImageContainer,
   StyledPaper,
 } from "@/styles/GlobalStyles";
+import { fetchProductById } from "@/services/productService";
 
 interface IProps {
   product: Product;
@@ -60,16 +61,29 @@ const ProductDetail: FC<IProps> = ({ product }) => {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { id } = context.params as { id: string };
-  const res = await axios.get(
-    `https://5fc9346b2af77700165ae514.mockapi.io/products/${id}`
-  );
-  const product = res.data;
 
-  return {
-    props: {
-      product,
-    },
-  };
+  try {
+    const product = await fetchProductById(id);
+
+    if (!product) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        product,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    return {
+      props: {
+        product: null,
+      },
+    };
+  }
 }
 
 export default ProductDetail;
